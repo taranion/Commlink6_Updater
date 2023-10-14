@@ -4,10 +4,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>Update4j Demo Create Configuration</name>
-		<groupId>de.rpgframework.shadowrun6</groupId>
-		<artifactId>create-config</artifactId>
-		<version>0.12.0</version>
+	<groupId>de.rpgframework.shadowrun6</groupId>
+	<artifactId>commlink-updater</artifactId>
+	<version>0.0.1</version>
+
+	<name>Commlink6_Updater</name>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -35,13 +36,13 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
     		<artifactId>log4j-jpl</artifactId>
-    		<version>2.18.0</version>
+    		<version>2.19.0</version>
     		<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
     		<artifactId>log4j-core</artifactId>
-    		<version>2.18.0</version>
+    		<version>2.19.0</version>
     		<scope>runtime</scope>
 		</dependency>
 	</dependencies>
@@ -54,36 +55,100 @@
 				<version>3.10.1</version>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.1.0</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.4.2</version>
+
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>de.rpgframework.splittermond.updater.JavaFxDelegateStart</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+
 				<executions>
 					<execution>
-						<id>create-config</id>
+						<id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
-							<goal>java</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<includeProjectDependencies>true</includeProjectDependencies>
-					<mainClass>de.rpgframework.shadowrun6.updater.CreateConfig</mainClass>
-					<systemProperties>
-						<systemProperty>
-							<key>maven.dir</key>
-							<value>${root}</value>
-						</systemProperty>
-						<systemProperty>
-							<key>target</key>
-							<value>${target}</value>
-						</systemProperty>
-						<systemProperty>
-							<key>config.location</key>
-							<value>${config.location}</value>
-						</systemProperty>
-					</systemProperties>
-				</configuration>
+
+			</plugin>
+
+			<!-- Produce installers for all 3 operating systesm -->
+			<plugin>
+    			<groupId>org.panteleyev</groupId>
+    			<artifactId>jpackage-maven-plugin</artifactId>
+    			<version>1.6.0</version>
+    			<configuration>
+        			<name>Commlink 6</name>
+        			<input>target</input>
+        			<appVersion>${project.version}</appVersion>
+        			<vendor>Stefan Prelle RPGFramework</vendor>
+        			<copyright>2023 Stefan Prelle</copyright>
+        			<description>Shadowrun 6 Character Management</description>
+        			<mainClass>${mainClassName}</mainClass>
+        			<mainJar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</mainJar>
+        			<verbose>true</verbose>
+        			<destination>target/jpackage</destination>
+        			<!--icon>src/darwin/assets/AppIcon.iconset/icon_128x1.png</icon-->
+        			<javaOptions>
+            		<option>-Dproject.version=${project.version}</option>
+        			</javaOptions>
+					<aboutUrl>https://commlink.rocks</aboutUrl>
+					<!-- Linux specific settings -->
+  					<linuxAppCategory>Game</linuxAppCategory>
+  					<linuxShortcut>true</linuxShortcut>
+        			<linuxDebMaintainer>stefan@rpgframework.de</linuxDebMaintainer>
+        			<linuxMenuGroup>RPGFramework</linuxMenuGroup>
+
+					<!-- Windows specific settings -->
+					<winDirChooser>true</winDirChooser>
+        			<winConsole>false</winConsole>
+        			<winMenu>true</winMenu>
+        			<winPerUserInstall>true</winPerUserInstall>
+        			<winShortcut>true</winShortcut>
+					<winHelpUrl>https://rpgframework.atlassian.net/servicedesk/customer/portal/18</winHelpUrl>
+					<winUpdateUrl>https://rpgframework.atlassian.net/wiki/spaces/COM6/pages/2037055489/Releases</winUpdateUrl>
+					<!-- MAC specific settings -->
+					<macAppCategory>role-playing-games</macAppCategory>
+					<macDmgContentPaths>
+						<macDmgContentPath>/docs</macDmgContentPath>
+					</macDmgContentPaths>
+  				</configuration>
+  				<executions>
+     				<execution>
+            		<id>linux</id>
+            		<configuration>
+        					<resourceDir>src/jpackage/linux</resourceDir>
+               		<icon>src/jpackage/linux/Commlink6_128x1.png</icon>
+							<type>RPM</type>
+          			</configuration>
+     				</execution>
+        			<execution>
+            		<id>win</id>
+            		<configuration>
+        					<resourceDir>src/jpackage/win</resourceDir>
+              		<icon>src/jpackage/win/Commlink6_128.ico</icon>
+              		<type>MSI</type>
+            		</configuration>
+        			</execution>
+        			<execution>
+            		<id>osx</id>
+            		<configuration>
+                		<icon>src/osx/Mondtor.icns</icon>
+                		<type>DMG</type>
+             		</configuration>
+        			</execution>
+    			</executions>
 			</plugin>
 		</plugins>
 	</build>
