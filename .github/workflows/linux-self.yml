@@ -1,0 +1,57 @@
+name: Compile Linux Self
+on: [push]
+#on:
+#  push:
+#    # Sequence of patterns matched against refs/tags
+#    tags:
+#    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+env:
+  LANG: "de_DE.UTF-8"
+
+jobs:
+  compile-linux-jre:
+    runs-on: [self-hosted, Linux]
+    steps:
+    - name: checkout sources
+      uses: actions/checkout@v3
+
+    - name: setup-graalvm-ce
+      uses: taranion/setup-graalvm@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set Release version env variable
+      run: |
+        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
+    - name: Package
+      run:  mvn package
+
+    - name: JPackage
+      run:  mvn jpackage:jpackage
+        
+    - name: Show result
+      run: ls target/jpackage
+      
+    - name: Upload JRE RPM
+      continue-on-error: true
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        verbose: true
+        local: target/jpackage/mondtor-${{ env.RELEASE_VERSION }}-1.x86_64.rpm
+        remote: /var/www/html/mondtor-builds/linux/Mondtor-Updater-${{env.RELEASE_VERSION}}.rpm
+        host: eden.rpgframework.de
+        username: ghmondtor
+        password: ${{ secrets.DEPLOY_PASSWORD }}
+      
+    - name: Upload JRE DEB
+      continue-on-error: true
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        verbose: true
+        local: target/jpackage/mondtor-${{ env.RELEASE_VERSION }}-1_amd64.deb
+        remote: /var/www/html/mondtor-builds/linux/Mondtor-Updater-${{env.RELEASE_VERSION}}.deb
+        host: eden.rpgframework.de
+        username: ghmondtor
+        password: ${{ secrets.DEPLOY_PASSWORD }}
+    
