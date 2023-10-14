@@ -66,7 +66,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>de.rpgframework.splittermond.updater.JavaFxDelegateStart</mainClass>
+							<mainClass>de.rpgframework.shadowrun6.updater.JavaFxDelegateStart</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -89,7 +89,7 @@
     			<artifactId>jpackage-maven-plugin</artifactId>
     			<version>1.6.0</version>
     			<configuration>
-        			<name>Commlink 6</name>
+        			<name>Commlink6</name>
         			<input>target</input>
         			<appVersion>${project.version}</appVersion>
         			<vendor>Stefan Prelle RPGFramework</vendor>
@@ -144,7 +144,7 @@
         			<execution>
             		<id>osx</id>
             		<configuration>
-                		<icon>src/osx/Mondtor.icns</icon>
+                		<icon>src/osx/Commlink6.icns</icon>
                 		<type>DMG</type>
              		</configuration>
         			</execution>
