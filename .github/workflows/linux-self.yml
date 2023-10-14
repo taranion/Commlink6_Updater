@@ -38,10 +38,10 @@ jobs:
       uses: garygrossgarten/github-action-scp@release
       with:
         verbose: true
-        local: target/jpackage/mondtor-${{ env.RELEASE_VERSION }}-1.x86_64.rpm
-        remote: /var/www/html/mondtor-builds/linux/Mondtor-Updater-${{env.RELEASE_VERSION}}.rpm
+        local: target/jpackage/commlink-6-${{ env.RELEASE_VERSION }}-1.x86_64.rpm
+        remote: /var/www/html/commlink6-builds/linux/Commlink6-Updater-${{env.RELEASE_VERSION}}.rpm
         host: eden.rpgframework.de
-        username: ghmondtor
+        username: ghcommlink
         password: ${{ secrets.DEPLOY_PASSWORD }}
       
     - name: Upload JRE DEB
@@ -49,9 +49,9 @@ jobs:
       uses: garygrossgarten/github-action-scp@release
       with:
         verbose: true
-        local: target/jpackage/mondtor-${{ env.RELEASE_VERSION }}-1_amd64.deb
-        remote: /var/www/html/mondtor-builds/linux/Mondtor-Updater-${{env.RELEASE_VERSION}}.deb
+        local: target/jpackage/commlink-6-${{ env.RELEASE_VERSION }}-1_amd64.deb
+        remote: /var/www/html/commlink6-builds/linux/Commlink6-Updater-${{env.RELEASE_VERSION}}.deb
         host: eden.rpgframework.de
-        username: ghmondtor
+        username: ghcommlink
         password: ${{ secrets.DEPLOY_PASSWORD }}
     

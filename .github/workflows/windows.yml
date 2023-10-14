@@ -50,7 +50,7 @@ jobs:
 
     - name: Prepare staging 2
       continue-on-error: true
-      run: mkdir Staging ; cp target/jpackage/Mondtor-*.msi Staging/
+      run: mkdir Staging ; cp target/jpackage/Commlink 6-*.msi Staging/
         
     - name: Show Staging content
       run: ls -l Staging
@@ -58,9 +58,9 @@ jobs:
     - name: Deploy MSI
       uses: garygrossgarten/github-action-scp@release
       with:
-        local: "target\\jpackage\\Mondtor-${{env.RELEASE_VERSION}}.msi"
-        remote: /var/www/html/mondtor-builds/win/Mondtor-Updater-${{env.RELEASE_VERSION}}.msi
+        local: "target\\jpackage\\Commlink 6-${{env.RELEASE_VERSION}}.msi"
+        remote: /var/www/html/commlink6-builds/win/Commlink6-Updater-${{env.RELEASE_VERSION}}.msi
         host: eden.rpgframework.de
-        username: ghmondtor
+        username: ghcommlink
         password: ${{ secrets.DEPLOY_PASSWORD }}
        
