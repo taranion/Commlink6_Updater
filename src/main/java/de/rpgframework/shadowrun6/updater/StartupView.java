@@ -1,7 +1,6 @@
 package de.rpgframework.shadowrun6.updater;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +42,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -67,6 +67,7 @@ public class StartupView extends VBox {
 	private Label lbLocalVersion, lbRemoteVersion;
 
 	private Button btnLaunch;
+	private Button btnCancel;
 	private Button btnUpdate;
 
 	private Configuration config;
@@ -139,6 +140,7 @@ public class StartupView extends VBox {
 
 		btnLaunch = new Button("Launch application");
 		btnUpdate = new Button("Update");
+		btnCancel = new Button("Cancel");
 	}
 
 	//-------------------------------------------------------------------
@@ -184,7 +186,11 @@ public class StartupView extends VBox {
 
 		Region buf2 = new Region();
 		buf2.setPrefHeight(50);
-		VBox gridPlusButtons = new VBox(20,grid,buf2,btnUpdate, btnLaunch);
+		HBox lowButtons = new HBox(10, btnLaunch, btnCancel);
+		lowButtons.setAlignment(Pos.CENTER);
+
+		VBox gridPlusButtons = new VBox(20,grid,buf2,btnUpdate, lowButtons);
+		VBox.setVgrow(lowButtons, Priority.NEVER);
 		HBox.setMargin(gridPlusButtons, new Insets(4));
 		gridPlusButtons.setAlignment(Pos.TOP_CENTER);
 
@@ -246,19 +252,11 @@ public class StartupView extends VBox {
 			CommlinkLauncher.primaryStage = primaryStage;
 			logger.log(Level.INFO, "Call config.launch()");
 			config.launch();
-//			Thread thread = new Thread( () -> {
-//				try {
-//					Thread.sleep(200);
-//					Platform.exit();
-//					Thread.sleep(2000);
-//					config.launch();
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			});
-//			thread.start();
-//			getScene().getWindow().hide();
+		});
+
+		btnCancel.setOnAction(ev -> {
+			Platform.exit();
+			System.exit(0);
 		});
 	}
 
