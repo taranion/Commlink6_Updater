@@ -246,6 +246,8 @@ public class StartupView extends VBox {
 		btnLaunch.setOnAction(ev -> {
 			logger.log(Level.INFO, "Launcher "+config.getLauncher());
 			logger.log(Level.INFO, "Launch "+config.getResolvedProperty(DefaultLauncher.MAIN_CLASS_PROPERTY_KEY));
+			System.setProperty("profile", cbType.getValue().name().toLowerCase());
+			System.setProperty("eden-server", cbType.getValue().server);
 			getScene().getWindow().hide();
 			((Stage)getScene().getWindow()).close();
 			System.setProperty("project.version", config.getResolvedProperty("project.version"));

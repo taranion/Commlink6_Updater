@@ -2,6 +2,7 @@ package de.rpgframework.shadowrun6.updater;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.charset.Charset;
@@ -30,14 +31,14 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
 	}
 
 	//-------------------------------------------------------------------
-	private static Thread createOutputThread(BufferedReader reader) {
+	private static Thread createOutputThread(BufferedReader reader, PrintStream out) {
 		Runnable sysOut = () -> {
 			try {
 				do {
 					String line = reader.readLine();
 					if (line==null)
 						break;
-					System.out.println("##"+line);
+					out.println(line);
 				} while (true);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -66,6 +67,8 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         }
         List<String> commandList = new ArrayList<>();
         commandList.add("java");
+        commandList.add("-Dproject.version="+config.getProperties("project.version").get(0).getValue());
+        commandList.add("-Dprofile="+System.getProperty("profile"));
         commandList.add("--class-path");
         commandList.add( String.join(":", pathes));
         commandList.add(mainClass);
@@ -75,9 +78,9 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         try {
         	Process proc = Runtime.getRuntime().exec(cmdArray, null);
 			System.out.println("Proc = "+proc);
-			Thread threadI = createOutputThread(proc.inputReader());
+			Thread threadI = createOutputThread(proc.inputReader(), System.out);
 			threadI.start();
-			Thread threadE = createOutputThread(proc.errorReader());
+			Thread threadE = createOutputThread(proc.errorReader(), System.err);
 			threadE.start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
