@@ -16,7 +16,9 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Locale;
+import java.util.prefs.Preferences;
 
 import org.update4j.Archive;
 import org.update4j.Configuration;
@@ -36,7 +38,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
@@ -54,6 +58,8 @@ import javafx.util.StringConverter;
  */
 public class StartupView extends VBox {
 
+	private final static String PASSWORD_KEY = "patreon.password";
+
 	private final static Logger logger = System.getLogger("commlink6.updater");
 
 	private ChoiceBox<ReleaseType> cbType;
@@ -65,6 +71,8 @@ public class StartupView extends VBox {
 	private ProgressBar progPerFile;
 	private Label lbState;
 	private Label lbLocalVersion, lbRemoteVersion;
+	private TextField tfPassword;
+	private Label hdPassword;
 
 	private Button btnLaunch;
 	private Button btnCancel;
@@ -133,6 +141,12 @@ public class StartupView extends VBox {
 		lbCurrentFile = new Label();
 		lbLocalVersion = new Label();
 		lbRemoteVersion = new Label();
+		tfPassword = new PasswordField();
+		tfPassword.setPromptText("Patreon Password");
+		String oldPW = Preferences.userRoot().get(PASSWORD_KEY, null);
+		if (oldPW!=null)
+			tfPassword.setText(oldPW);
+
 		progFiles = new ProgressBar(0.0f);
 		progPerFile = new ProgressBar(0.0f);
 		lbState   = new Label();
@@ -154,10 +168,12 @@ public class StartupView extends VBox {
 		Label hdLang = new Label("Language");
 		Label hdLocal  = new Label("Installed:");
 		Label hdRemote = new Label("Most recent:");
+		hdPassword = new Label("Patreon Password:");
 		hdType.setStyle("-fx-font-weight: bold");
 		hdLang.setStyle("-fx-font-weight: bold");
 		hdLocal.setStyle("-fx-font-weight: bold");
 		hdRemote.setStyle("-fx-font-weight: bolder");
+		hdPassword.setStyle("-fx-font-weight: bolder");
 
 		grid.add(hdType, 0, 0);
 		grid.add(cbType, 1, 0);
@@ -165,9 +181,11 @@ public class StartupView extends VBox {
 		grid.add(cbLang, 1, 1);
 		grid.add(new HBox(5,hdLocal, lbLocalVersion), 0, 2);
 		grid.add(new HBox(5,hdRemote, lbRemoteVersion), 1, 2);
-		grid.add(progFiles    , 0, 3, 2,1);
-		grid.add(progPerFile  , 0, 4, 2,1);
-		grid.add(lbState, 0, 5, 2,1);
+		grid.add(hdPassword, 0, 3);
+		grid.add(tfPassword, 1, 3);
+		grid.add(progFiles    , 0, 4, 2,1);
+		grid.add(progPerFile  , 0, 5, 2,1);
+		grid.add(lbState, 0, 6, 2,1);
 
 		progPerFile.setMaxWidth(Double.MAX_VALUE);
 		GridPane.setFillWidth(progPerFile, true);
@@ -213,6 +231,14 @@ public class StartupView extends VBox {
 		cbType.getSelectionModel().selectedItemProperty().addListener( (ov,o,n) -> {
 			logger.log(Level.DEBUG, "Updated stability type to "+n);
 			if (n==null) return;
+
+			if (n==ReleaseType.DEVELOP) {
+				tfPassword.setVisible(true);
+				hdPassword.setVisible(true);
+			} else {
+				tfPassword.setVisible(false);
+				hdPassword.setVisible(false);
+			}
 			try {
 				updateLocalConfig();
 				updateRemoteConfig();
@@ -260,6 +286,16 @@ public class StartupView extends VBox {
 			Platform.exit();
 			System.exit(0);
 		});
+
+		tfPassword.textProperty().addListener( (ov,o,n) -> {
+			try {
+				Preferences.userRoot().put(PASSWORD_KEY, n);
+				updateRemoteConfig();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 	}
 
 	//-------------------------------------------------------------------
@@ -284,25 +320,45 @@ public class StartupView extends VBox {
 	}
 
 	//-------------------------------------------------------------------
+	private String getBasicAuthenticationHeader() {
+	    String valueToEncode = "patreon:" + tfPassword.getText();
+	    return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
+	}
+
+	//-------------------------------------------------------------------
 	private void updateRemoteConfig() throws IOException {
 		ReleaseType n = cbType.getValue();
-		URL configUrl = new URL("http://"+n.getServer()+"/commlink6-updates/"+n.name().toLowerCase()+"/config.xml");
-		logger.log(Level.INFO, "Search config at {0}", configUrl);
+		//String credentials = "patreon:"+tfPassword.getText()+"@";
+		String credentials ="";
+		URL configUrl = new URL("http://"+credentials+n.getServer()+"/commlink6-updates/"+n.name().toLowerCase()+"/config.xml");
+		logger.log(Level.DEBUG, "Search config at {0}", configUrl);
 		config = null;
 		try {
-			HttpResponse<byte[]> response = HttpClient.newHttpClient().send(HttpRequest.newBuilder().uri(configUrl.toURI()).build(), HttpResponse.BodyHandlers.ofByteArray());
+			HttpResponse<byte[]> response = HttpClient
+					.newBuilder()
+					.build()
+					.send(HttpRequest.newBuilder()
+							.uri(configUrl.toURI())
+							.header("Authorization", getBasicAuthenticationHeader())
+							.build(), HttpResponse.BodyHandlers.ofByteArray());
 			switch (response.statusCode()) {
 			case 200:
 				configXML = response.body();
 				logger.log(Level.DEBUG, "Config successfully loaded with {0} bytes",configXML.length);
+				btnLaunch.setDisable(false);
 				break;
 			case 404:
 				logger.log(Level.DEBUG, "No config for {0} exists on remote server",n);
 				btnUpdate.setDisable(true);
 				return;
 			default:
-				logger.log(Level.ERROR, "Error loading config for {0} from remote server: {1}",n, response.statusCode());
 				btnUpdate.setDisable(true);
+				if (response.statusCode()==401) {
+					btnLaunch.setDisable(true);
+				} else {
+					logger.log(Level.ERROR, "Error loading config for {0} from remote server: {1}",n, response.statusCode());
+					btnLaunch.setDisable(false);
+				}
 				return;
 			}
 			Reader in = new InputStreamReader(new ByteArrayInputStream(configXML));
