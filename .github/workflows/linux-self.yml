@@ -34,11 +34,10 @@ jobs:
       run: ls target/jpackage
       
     - name: Upload JRE RPM
-      continue-on-error: true
       uses: garygrossgarten/github-action-scp@release
       with:
         verbose: true
-        local: target/jpackage/commlink6-${{ env.RELEASE_VERSION }}-1.x86_64.rpm
+        local: target/jpackage/commlink6-updater-${{ env.RELEASE_VERSION }}-1.x86_64.rpm
         remote: /var/www/html/commlink6-builds/linux/Commlink6-Updater-${{env.RELEASE_VERSION}}.rpm
         host: eden.rpgframework.de
         username: ghcommlink
@@ -49,7 +48,7 @@ jobs:
       uses: garygrossgarten/github-action-scp@release
       with:
         verbose: true
-        local: target/jpackage/commlink6-${{ env.RELEASE_VERSION }}-1_amd64.deb
+        local: target/jpackage/commlink6-updater-${{ env.RELEASE_VERSION }}-1_amd64.deb
         remote: /var/www/html/commlink6-builds/linux/Commlink6-Updater-${{env.RELEASE_VERSION}}.deb
         host: eden.rpgframework.de
         username: ghcommlink
