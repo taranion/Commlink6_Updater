@@ -63,6 +63,7 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         for (FileMetadata meta : config.getFiles()) {
         	String path =meta.getPath().toString();
         	pathes.add(path);
+        	logger.log(Level.DEBUG, "Classpath: {0}",path);
         }
         List<String> commandList = new ArrayList<>();
         commandList.add("java");

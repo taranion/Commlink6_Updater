@@ -6,7 +6,7 @@ on: [push]
 #    tags:
 #    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 env:
-  LANG: "de_DE.UTF-8"
+  LANG: "en_EN.UTF-8"
 
 jobs:
   compile-jpackage:
@@ -15,14 +15,20 @@ jobs:
     - name: checkout sources
       uses: actions/checkout@master
 
+    - name: setup-graalvm-ce
+      uses: taranion/setup-graalvm@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Set Release version env variable
       run: |
         echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
     - name: Package
-      run:  mvn package
-      env: 
-        LANG: en_EN
+      run:  mvn -s settings.xml package
+        
+    - name: Show result1
+      run: ls target/
 
     - name: JPackage
       run:   mvn jpackage:jpackage@osx

@@ -155,6 +155,7 @@ public class StartupView extends VBox {
 		btnLaunch = new Button("Launch application");
 		btnUpdate = new Button("Update");
 		btnCancel = new Button("Cancel");
+		btnLaunch.setDisable(true);
 	}
 
 	//-------------------------------------------------------------------
@@ -245,12 +246,18 @@ public class StartupView extends VBox {
 				if (config==null) return;
 
 				logger.log(Level.INFO, "Config now "+config.getResolvedProperty("project.version"));
-				btnUpdate.setDisable(false);
 				if (config.requiresUpdate()) {
+					logger.log(Level.INFO, "Update required");
 					btnUpdate.setText("Update to "+config.getResolvedProperty("project.version"));
 					btnUpdate.setDisable(false);
-					btnLaunch.setDisable(false);
+					btnLaunch.setDisable(true);
 				} else {
+					logger.log(Level.INFO, "Update not required");
+					if (localConfig==null) {
+						logger.log(Level.INFO, "No local config "+localConfigPath);
+						Files.createDirectories(localConfigPath.getParent());
+						Files.write(localConfigPath, configXML);
+					}
 					btnUpdate.setDisable(true);
 					btnLaunch.setDisable(false);
 				}
@@ -300,8 +307,9 @@ public class StartupView extends VBox {
 
 	//-------------------------------------------------------------------
 	private void updateLocalConfig() throws IOException {
-		localConfigPath = Paths.get(System.getProperty("user.home"), "Commlink6", "app", cbType.getValue().name().toLowerCase(), "config.xml");
+		localConfigPath = Paths.get(System.getProperty("user.home"), "CommLink6", "app", cbType.getValue().name().toLowerCase(), "config.xml");
 		logger.log(Level.INFO, "Expect local config at {0}", localConfigPath);
+		lbState.setText("Location: "+localConfigPath.getParent());
 		if (!Files.exists(localConfigPath)) {
 			localConfig = null;
 			logger.log(Level.INFO, "No local config at {0}", localConfigPath);
@@ -309,10 +317,11 @@ public class StartupView extends VBox {
 			btnLaunch.setDisable(true);
 			return;
 		}
+		logger.log(Level.INFO, "Found local config at {0}", localConfigPath);
 		try {
 			localConfig = Configuration.read(new FileReader(localConfigPath.toFile()));
 			Platform.runLater( () -> lbLocalVersion.setText(localConfig.getResolvedProperty("project.version")));
-			btnLaunch.setDisable(false);
+			btnLaunch.setDisable(!Files.exists(localConfigPath));
 		} catch (IOException e) {
 			logger.log(Level.ERROR, "Cannot load local config: "+e.getMessage());
 			btnLaunch.setDisable(true);
@@ -345,7 +354,7 @@ public class StartupView extends VBox {
 			case 200:
 				configXML = response.body();
 				logger.log(Level.DEBUG, "Config successfully loaded with {0} bytes",configXML.length);
-				btnLaunch.setDisable(false);
+				btnUpdate.setDisable(false);
 				break;
 			case 404:
 				logger.log(Level.DEBUG, "No config for {0} exists on remote server",n);
@@ -437,13 +446,13 @@ public class StartupView extends VBox {
 		Thread thread = new Thread( () -> {
 			SSLFix.execute();
 			UpdateResult result = config.update(options);
-			logger.log(Level.ERROR, "Result "+result);
+			logger.log(Level.ERROR, "config.update result "+result);
 			UpdateContext obj = result.result();
-			logger.log(Level.ERROR, "Result2 "+obj);
 			if (result.getException()==null) {
-				logger.log(Level.INFO, "All files downloaded and packaged as an archive ready to install");
+				logger.log(Level.INFO, "All files downloaded and packaged as an archive ready to install - or already installed");
 				try {
 					Archive.read(zip).install(true);
+					Files.createDirectories(localConfigPath.getParent());
 					Files.write(localConfigPath, configXML);
 					updateLocalConfig();
 				} catch (IOException e) {
