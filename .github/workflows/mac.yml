@@ -15,10 +15,10 @@ jobs:
     - name: checkout sources
       uses: actions/checkout@master
 
-    - name: setup-graalvm-ce
-      uses: taranion/setup-graalvm@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'oracle' # See 'Supported distributions' for available options
+        java-version: '18'
 
     - name: Set Release version env variable
       run: |
