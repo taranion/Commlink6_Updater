@@ -100,7 +100,7 @@
         			<destination>target/jpackage</destination>
         			<!--icon>src/darwin/assets/AppIcon.iconset/icon_128x1.png</icon-->
         			<javaOptions>
-            		<option>-Dproject.version=${project.version}</option>
+            		<option>-Dupdater.version=${project.version}</option>
         			</javaOptions>
 					<aboutUrl>https://commlink.rocks</aboutUrl>
 					<!-- Linux specific settings -->
@@ -111,7 +111,7 @@
 
 					<!-- Windows specific settings -->
 					<winDirChooser>true</winDirChooser>
-        			<winConsole>true</winConsole>
+        			<winConsole>false</winConsole>
         			<winMenu>true</winMenu>
         			<winPerUserInstall>true</winPerUserInstall>
         			<winShortcut>true</winShortcut>
@@ -120,7 +120,7 @@
 					<!-- MAC specific settings -->
 					<macAppCategory>role-playing-games</macAppCategory>
 					<macDmgContentPaths>
-						<macDmgContentPath>jpackage/osx/docs</macDmgContentPath>
+						<macDmgContentPath>src/jpackage/osx/docs</macDmgContentPath>
 					</macDmgContentPaths>
   				</configuration>
   				<executions>
