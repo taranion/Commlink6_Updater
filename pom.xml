@@ -89,7 +89,7 @@
     			<artifactId>jpackage-maven-plugin</artifactId>
     			<version>1.6.0</version>
     			<configuration>
-        			<name>Commlink6</name>
+        			<name>Commlink6 Updater</name>
         			<input>target</input>
         			<appVersion>${project.version}</appVersion>
         			<vendor>RPGFramework</vendor>
@@ -111,7 +111,7 @@
 
 					<!-- Windows specific settings -->
 					<winDirChooser>true</winDirChooser>
-        			<winConsole>false</winConsole>
+        			<winConsole>true</winConsole>
         			<winMenu>true</winMenu>
         			<winPerUserInstall>true</winPerUserInstall>
         			<winShortcut>true</winShortcut>
