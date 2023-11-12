@@ -3,7 +3,10 @@ package de.rpgframework.shadowrun6.updater;
 import java.awt.Taskbar;
 import java.awt.Taskbar.Feature;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.util.List;
 
 import org.update4j.service.Delegate;
@@ -42,12 +45,26 @@ public class JavaFxDelegate extends Application implements Delegate {
 	public void init() {
 		System.setProperty("update4j.suppress.warning", "false");
 
-//		logger.log(Level.DEBUG, "class loader 1 = "+ClassLoader.getSystemClassLoader());
-//		logger.log(Level.DEBUG, "class loader 2 = "+System.getProperty("java.class.path"));
-//
-//		for (String elem : System.getProperty("java.class.path").split(":")) {
-//			logger.log(Level.DEBUG, "  "+elem);
-//		}
+		logger.log(Level.DEBUG, "class loader 1 = "+ClassLoader.getSystemClassLoader());
+		logger.log(Level.DEBUG, "class loader 2 = "+System.getProperty("java.class.path"));
+
+		for (String elem : System.getProperty("java.class.path").split(":")) {
+			logger.log(Level.DEBUG, "  "+elem);
+		}
+
+		Parameters params = this.getParameters();
+		for (String elem : params.getRaw()) {
+			logger.log(Level.DEBUG, "Param  "+elem);
+		}
+
+		try {
+			String path = new File(".").getCanonicalPath();
+			logger.log(Level.DEBUG, "Path1 "+path);
+			logger.log(Level.DEBUG, "Path2 "+ProcessHandle.current().info().command());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

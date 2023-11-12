@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.update4j.Configuration;
 import org.update4j.FileMetadata;
@@ -65,8 +68,15 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         	pathes.add(path);
         	logger.log(Level.DEBUG, "Classpath: {0}",path);
         }
+
+        Optional<String> info = ProcessHandle.current().info().command();
+    	logger.log(Level.INFO, "Current process: {0}",info);
+    	Path path1 = Paths.get(info.get());
+    	Path jvmPath = path1.getParent().resolveSibling("lib").resolve("runtime").resolve("bin").resolve("java");
+    	logger.log(Level.INFO, "JVM to use: {0}",info);
+
         List<String> commandList = new ArrayList<>();
-        commandList.add("java");
+        commandList.add(jvmPath.toString());
         commandList.add("-Dproject.version="+config.getProperties("project.version").get(0).getValue());
         commandList.add("-Dprofile="+System.getProperty("profile"));
         commandList.add("--class-path");

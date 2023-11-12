@@ -6,7 +6,7 @@
 
 	<groupId>de.rpgframework.shadowrun6</groupId>
 	<artifactId>commlink-updater</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<name>Commlink6_Updater</name>
 	<packaging>jar</packaging>
@@ -102,6 +102,11 @@
         			<javaOptions>
             		<option>-Dupdater.version=${project.version}</option>
         			</javaOptions>
+        			<jLinkOptions>
+						  <jLinkOption>--strip-debug</jLinkOption>
+						  <jLinkOption>--no-header-files</jLinkOption>
+						  <jLinkOption>--no-man-pages</jLinkOption>
+					</jLinkOptions>
 					<aboutUrl>https://commlink.rocks</aboutUrl>
 					<!-- Linux specific settings -->
   					<linuxAppCategory>Game</linuxAppCategory>
@@ -122,6 +127,8 @@
 					<macDmgContentPaths>
 						<macDmgContentPath>src/jpackage/osx/docs</macDmgContentPath>
 					</macDmgContentPaths>
+
+
   				</configuration>
   				<executions>
      				<execution>
