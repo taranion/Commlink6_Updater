@@ -45,26 +45,19 @@ public class JavaFxDelegate extends Application implements Delegate {
 	public void init() {
 		System.setProperty("update4j.suppress.warning", "false");
 
-		logger.log(Level.DEBUG, "class loader 1 = "+ClassLoader.getSystemClassLoader());
-		logger.log(Level.DEBUG, "class loader 2 = "+System.getProperty("java.class.path"));
+//		logger.log(Level.DEBUG, "class loader 1 = "+ClassLoader.getSystemClassLoader());
+//		logger.log(Level.DEBUG, "class loader 2 = "+System.getProperty("java.class.path"));
+//
+//		for (String elem : System.getProperty("java.class.path").split(":")) {
+//			logger.log(Level.DEBUG, "  "+elem);
+//		}
 
-		for (String elem : System.getProperty("java.class.path").split(":")) {
-			logger.log(Level.DEBUG, "  "+elem);
-		}
+//		Parameters params = this.getParameters();
+//		for (String elem : params.getRaw()) {
+//			logger.log(Level.DEBUG, "Param  "+elem);
+//		}
 
-		Parameters params = this.getParameters();
-		for (String elem : params.getRaw()) {
-			logger.log(Level.DEBUG, "Param  "+elem);
-		}
-
-		try {
-			String path = new File(".").getCanonicalPath();
-			logger.log(Level.DEBUG, "Path1 "+path);
-			logger.log(Level.DEBUG, "Path2 "+ProcessHandle.current().info().command());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		logger.log(Level.DEBUG, "Process "+ProcessHandle.current().info().command());
 	}
 
 	@Override
