@@ -1,10 +1,12 @@
 package de.rpgframework.shadowrun6.updater;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -70,9 +72,20 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         }
 
         Optional<String> info = ProcessHandle.current().info().command();
-    	logger.log(Level.INFO, "Current process: {0}",info);
     	Path path1 = Paths.get(info.get());
-    	Path jvmPath = path1.getParent().resolveSibling("lib").resolve("runtime").resolve("bin").resolve("java");
+    	logger.log(Level.INFO, "Current process: {0}",path1);
+    	logger.log(Level.INFO, " 1             : {0}",path1.getParent());
+    	logger.log(Level.INFO, " 2             : {0}",path1.getParent().getParent());
+    	try {
+    		File cwd = Paths.get(".").toFile().getCanonicalFile();
+			logger.log(Level.INFO, " 3             : {0}",cwd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	logger.log(Level.INFO, " 4             : {0}",Paths.get(".", "lib", "runtime", "bin", "java"));
+    	logger.log(Level.INFO, " 5             : {0}",Files.exists(Paths.get(".", "lib", "runtime", "bin", "java")));
+    	Path jvmPath = path1.getParent().getParent().resolve("lib").resolve("runtime").resolve("bin").resolve("java");
     	logger.log(Level.INFO, "JVM to use: {0}",info);
 
         List<String> commandList = new ArrayList<>();
