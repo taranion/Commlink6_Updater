@@ -103,7 +103,7 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         commandList.add("-Dproject.version="+config.getProperties("project.version").get(0).getValue());
         commandList.add("-Dprofile="+System.getProperty("profile"));
         commandList.add("--class-path");
-        commandList.add( String.join(":", pathes));
+        commandList.add( String.join(System.getProperty("path.separator"), pathes));
         commandList.add(mainClass);
         logger.log(Level.INFO, "Execute {0}",commandList);
         String[] cmdArray = new String[commandList.size()];
@@ -118,7 +118,7 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
 
 			Thread.sleep(2000);
 	        logger.log(Level.INFO, "Wait for process {0}",proc);
-	        proc.waitFor();
+	        //proc.waitFor();
 		} catch (Exception e) {
 			logger.log(Level.ERROR, "Error starting process",e);
 			e.printStackTrace();
