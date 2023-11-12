@@ -66,11 +66,11 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         mainClass = "de.rpgframework.shadowrun6.comlink.ComLinkStarter";
 
         List<String> pathes = new ArrayList<>();
-//        for (FileMetadata meta : config.getFiles()) {
-//        	String path =meta.getPath().toString();
-//        	pathes.add(path);
+        for (FileMetadata meta : config.getFiles()) {
+        	String path =meta.getPath().toString();
+        	pathes.add(path);
 //        	logger.log(Level.DEBUG, "Classpath: {0}",path);
-//        }
+        }
 
 		Optional<String> info = ProcessHandle.current().info().command();
 		Path cwd = Paths.get(info.get()).getParent();
