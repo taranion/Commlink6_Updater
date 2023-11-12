@@ -44,7 +44,6 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
 					if (line==null)
 						break;
 					out.println(line);
-					logger.log(Level.INFO, out);
 				} while (true);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -115,10 +114,6 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
 			threadI.start();
 			Thread threadE = createOutputThread(proc.errorReader(), System.err);
 			threadE.start();
-
-			Thread.sleep(2000);
-	        logger.log(Level.INFO, "Wait for process {0}",proc);
-	        //proc.waitFor();
 		} catch (Exception e) {
 			logger.log(Level.ERROR, "Error starting process",e);
 			e.printStackTrace();

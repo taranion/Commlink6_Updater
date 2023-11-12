@@ -116,7 +116,7 @@
 
 					<!-- Windows specific settings -->
 					<winDirChooser>true</winDirChooser>
-        			<winConsole>true</winConsole>
+        			<winConsole>false</winConsole>
         			<winMenu>true</winMenu>
         			<winPerUserInstall>true</winPerUserInstall>
         			<winShortcut>true</winShortcut>
