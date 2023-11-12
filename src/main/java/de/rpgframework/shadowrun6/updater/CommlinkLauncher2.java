@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,11 +66,11 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         mainClass = "de.rpgframework.shadowrun6.comlink.ComLinkStarter";
 
         List<String> pathes = new ArrayList<>();
-        for (FileMetadata meta : config.getFiles()) {
-        	String path =meta.getPath().toString();
-        	pathes.add(path);
-        	logger.log(Level.DEBUG, "Classpath: {0}",path);
-        }
+//        for (FileMetadata meta : config.getFiles()) {
+//        	String path =meta.getPath().toString();
+//        	pathes.add(path);
+//        	logger.log(Level.DEBUG, "Classpath: {0}",path);
+//        }
 
 		Optional<String> info = ProcessHandle.current().info().command();
 		Path cwd = Paths.get(info.get()).getParent();
@@ -77,8 +78,17 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
 			cwd = cwd.getParent();
 		logger.log(Level.INFO, "Current working directory: {0}",cwd);
 		if (Files.exists(cwd.resolve("lib"))) {
+			try {
+				DirectoryStream<Path>  contents = Files.newDirectoryStream(cwd);
+				contents.forEach(file -> logger.log(Level.DEBUG, "--> {0}",file));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			cwd = cwd.resolve("lib");
+			logger.log(Level.INFO, " {0} exists",cwd);
 		}
+		logger.log(Level.INFO, "Current working directory 2: {0}",cwd);
     	Path jvmPath = cwd.resolve("runtime").resolve("bin").resolve("java");
     	logger.log(Level.INFO, "JVM to use: {0}",jvmPath);
      	logger.log(Level.INFO, " exists  : {0}",Files.exists(jvmPath));
