@@ -71,22 +71,14 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         	logger.log(Level.DEBUG, "Classpath: {0}",path);
         }
 
-        Optional<String> info = ProcessHandle.current().info().command();
-    	Path path1 = Paths.get(info.get());
-    	logger.log(Level.INFO, "Current process: {0}",path1);
-    	logger.log(Level.INFO, " 1             : {0}",path1.getParent());
-    	logger.log(Level.INFO, " 2             : {0}",path1.getParent().getParent());
-    	try {
-    		File cwd = Paths.get(".").toFile().getCanonicalFile();
-			logger.log(Level.INFO, " 3             : {0}",cwd);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	logger.log(Level.INFO, " 4             : {0}",Paths.get(".", "lib", "runtime", "bin", "java"));
-    	logger.log(Level.INFO, " 5             : {0}",Files.exists(Paths.get(".", "lib", "runtime", "bin", "java")));
-    	Path jvmPath = path1.getParent().getParent().resolve("lib").resolve("runtime").resolve("bin").resolve("java");
-    	logger.log(Level.INFO, "JVM to use: {0}",info);
+		Optional<String> info = ProcessHandle.current().info().command();
+		Path cwd = Paths.get(info.get()).getParent();
+		if (cwd.getFileName().toString().equals("bin"))
+			cwd = cwd.getParent();
+		logger.log(Level.INFO, "Current working directory: {0}",cwd);
+    	Path jvmPath = cwd.resolve("lib").resolve("runtime").resolve("bin").resolve("java");
+    	logger.log(Level.INFO, "JVM to use: {0}",jvmPath);
+     	logger.log(Level.INFO, " exists  : {0}",Files.exists(jvmPath));
 
         List<String> commandList = new ArrayList<>();
         commandList.add(jvmPath.toString());
