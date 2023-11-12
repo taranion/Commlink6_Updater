@@ -109,12 +109,15 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
         cmdArray = commandList.toArray(cmdArray);
         try {
         	Process proc = Runtime.getRuntime().exec(cmdArray, null);
-			System.out.println("Proc = "+proc);
+            logger.log(Level.INFO, "Started process {0}",proc);
 			Thread threadI = createOutputThread(proc.inputReader(), System.out);
 			threadI.start();
 			Thread threadE = createOutputThread(proc.errorReader(), System.err);
 			threadE.start();
-		} catch (IOException e) {
+
+			Thread.sleep(2000);
+	        logger.log(Level.INFO, "Wait for process {0}",proc);
+		} catch (Exception e) {
 			logger.log(Level.ERROR, "Error starting process",e);
 			e.printStackTrace();
 		}
