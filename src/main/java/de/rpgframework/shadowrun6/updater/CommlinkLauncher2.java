@@ -44,6 +44,7 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
 					if (line==null)
 						break;
 					out.println(line);
+					logger.log(Level.INFO, out);
 				} while (true);
 			} catch (IOException e) {
 				e.printStackTrace();
