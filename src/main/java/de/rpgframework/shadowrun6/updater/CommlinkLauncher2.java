@@ -76,7 +76,10 @@ public class CommlinkLauncher2 extends DefaultLauncher implements Launcher {
 		if (cwd.getFileName().toString().equals("bin"))
 			cwd = cwd.getParent();
 		logger.log(Level.INFO, "Current working directory: {0}",cwd);
-    	Path jvmPath = cwd.resolve("lib").resolve("runtime").resolve("bin").resolve("java");
+		if (Files.exists(cwd.resolve("lib"))) {
+			cwd = cwd.resolve("lib");
+		}
+    	Path jvmPath = cwd.resolve("runtime").resolve("bin").resolve("java");
     	logger.log(Level.INFO, "JVM to use: {0}",jvmPath);
      	logger.log(Level.INFO, " exists  : {0}",Files.exists(jvmPath));
 
