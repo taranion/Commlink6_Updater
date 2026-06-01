@@ -13,6 +13,7 @@ import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpClient.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -345,6 +346,7 @@ public class StartupView extends VBox {
 		try {
 			HttpResponse<byte[]> response = HttpClient
 					.newBuilder()
+					.followRedirects(Redirect.NORMAL)
 					.build()
 					.send(HttpRequest.newBuilder()
 							.uri(configUrl.toURI())
